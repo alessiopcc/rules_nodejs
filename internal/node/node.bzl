@@ -302,7 +302,9 @@ fi
     runfiles.append(ctx.outputs.require_patch_script)
     runfiles.append(ctx.file._repository_args)
 
-    if is_windows(ctx):
+    windows_constraint = ctx.attr._windows_constraint[platform_common.ConstraintValueInfo]
+
+    if ctx.target_platform_has_constraint(windows_constraint):
         runfiles.append(ctx.outputs.launcher_sh)
         executable = create_windows_native_launcher_script(ctx, ctx.outputs.launcher_sh)
     else:
@@ -625,6 +627,7 @@ Predefined genrule variables are not supported in this context.
         ],
         allow_files = True,
     ),
+    "_windows_constraint": attr.label(default = "@bazel_tools//platforms:windows"),
 }
 
 _NODEJS_EXECUTABLE_OUTPUTS = {
