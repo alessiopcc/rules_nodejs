@@ -103,6 +103,20 @@ function symlink(target, p) {
             return false;
         }
         try {
+            let rp = (yield fs.promises.realpath(target)).toLowerCase();
+
+            if (rp === path.resolve(target).toLowerCase()) {
+                return true;
+            } else {
+                yield fs.promises.unlink(path.resolve(p));
+            }
+        }
+        catch (e) {
+            if (e.code !== 'ENOENT') {
+                throw e;
+            }
+        }
+        try {
             yield fs.promises.symlink(target, p, 'junction');
             return true;
         }
